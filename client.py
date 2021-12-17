@@ -1,6 +1,5 @@
 import socket
 import json
-import time
 from simple_term_menu import TerminalMenu
 
 
@@ -27,7 +26,7 @@ def Client():
 
             if jsonData['Type'] == 'Send':
                 print(jsonData['Response'])
-                time.sleep(2)
+                
 
             elif jsonData['Type'] == 'Fetch':
                 file=jsonData['File']
@@ -76,9 +75,11 @@ def Client():
             
             elif optionsChoice == 'Delete File':
                 filePath=input('Enter File Name: ')
+                password=input('Enter The Server Password: ')
                 sendData={
                     'Type':'Delete',
-                    'Path':filePath
+                    'Path':filePath,
+                    'Key':password
                     }
                 data = json.dumps(sendData)
                 client.sendall(bytes(data,encoding=FORMAT))

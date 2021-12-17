@@ -10,6 +10,7 @@ ADDR = (IP, PORT)
 SIZE = 1024
 FORMAT = "utf-8"
 SERVER_DATA_PATH = "ServerFiles"
+PASSWORD = "admin"
 
 
 def handleClient(conn, addr):
@@ -66,32 +67,40 @@ def handleClient(conn, addr):
                 conn.sendall(bytes(data,encoding=FORMAT))
 
         if jsonData['Type'] == 'Delete':
-            files = os.listdir(SERVER_DATA_PATH)
-            file=jsonData['Path']
-
-            if len(files) == 0:
+            if jsonData['Key'] != PASSWORD:
                 sendData = {
                 'Type':'Send',
-                'Response':'The Server is Empty'
+                'Response':'Wrong Password'
                 }
                 data = json.dumps(sendData)
                 conn.sendall(bytes(data,encoding=FORMAT))
             else:
-                if file in files:
-                    os.system(f"rm {SERVER_DATA_PATH}/{file}")
+                files = os.listdir(SERVER_DATA_PATH)
+                file=jsonData['Path']
+
+                if len(files) == 0:
                     sendData = {
                     'Type':'Send',
-                    'Response':'File deleted'
+                    'Response':'The Server is Empty'
                     }
                     data = json.dumps(sendData)
                     conn.sendall(bytes(data,encoding=FORMAT))
                 else:
-                    sendData = {
-                    'Type':'Send',
-                    'Response':'File not found'
-                    }
-                    data = json.dumps(sendData)
-                    conn.sendall(bytes(data,encoding=FORMAT))
+                    if file in files:
+                        os.system(f"rm {SERVER_DATA_PATH}/{file}")
+                        sendData = {
+                        'Type':'Send',
+                        'Response':'File deleted'
+                        }
+                        data = json.dumps(sendData)
+                        conn.sendall(bytes(data,encoding=FORMAT))
+                    else:
+                        sendData = {
+                        'Type':'Send',
+                        'Response':'File not found'
+                        }
+                        data = json.dumps(sendData)
+                        conn.sendall(bytes(data,encoding=FORMAT))
 
         if jsonData['Type'] == 'Download':
             file=jsonData['Path']
